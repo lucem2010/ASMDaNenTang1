@@ -1,22 +1,39 @@
 import { StyleSheet, Text, View, Image, TextInput, Button, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
+var api = 'https://65bd8b00b51f9b29e93389f8.mockapi.io/Account';
 
 const login = ({ navigation }) => {
   const [a, b] = useState(false);
   const [email, setEmail] = useState('');
-  const [Password, setPassword] = useState('');
+  const [password, setPassword] = useState('');
 
-  const emailDangNhap = 'lucd7464@gmail.com';
-  const PasswordDangNhap = '123456';
 
-  const checkLogin=()=>{
-    if(email.trim()===''||Password.trim()===''){
+
+  const lay_ds = async () => {
+    try {
+      let res = await fetch(api);
+      let data = await res.json();
+
+      const user = data.find(userData => userData.email === email && userData.password === password);
+
+      if (user) {
+        navigation.navigate('bottomtab')
+      } else {
+        Alert.alert('Email hoặc mật khẩu không đúng!');
+      }
+
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const checkLogin = () => {
+    if (email.trim() === '' || password.trim() === '') {
       Alert.alert('email  hoặc mật khẩu trống');
-    } else if(email!==emailDangNhap||Password!==PasswordDangNhap){
-      Alert.alert('email hoặc mật khẩu không chính xác');
-    } else{
-      navigation.navigate('home')
+    } else {
+      lay_ds();
     }
   }
 
@@ -27,23 +44,23 @@ const login = ({ navigation }) => {
       <Text style={styles.tieuDe}>welcome to Lungo</Text>
       <Text >login to continue</Text>
 
-      <TextInput style={styles.textInput} placeholder='Email Address'
+      <TextInput style={styles.textInput} placeholder='Email Address' placeholderTextColor={'white'}
         onChangeText={(txt) => setEmail(txt)}></TextInput>
 
       <View style={styles.khungTextInput}>
-        <TextInput style={styles.textInputPass} placeholder='Password'
+        <TextInput style={styles.textInputPass} placeholder='Password' placeholderTextColor={'white'}
           secureTextEntry={!a} onChangeText={(txt) => { setPassword(txt) }}
         ></TextInput>
 
         <TouchableOpacity onPress={() => a ? b(false) : b(true)}>
           <Image
             source={a ? require('../imgApp/matmo.png') : require('../imgApp/matnham.png')}
-            style={{ width: 25, height: 20 }}
+            style={{ width: 25, height: 20, backgroundColor: 'white' }}
           />
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.botton} onPress={()=>checkLogin()}>
+      <TouchableOpacity style={styles.botton} onPress={() => checkLogin()}>
         <Text style={styles.tieuDe}>Sing In</Text>
       </TouchableOpacity>
 
@@ -72,7 +89,7 @@ export default login
 const styles = StyleSheet.create({
   khung: {
     flex: 1,
-    backgroundColor: 'pink',
+    backgroundColor: 'black',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -100,7 +117,10 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderWidth: 1,
     marginTop: 10,
-    borderRadius: 10
+    borderRadius: 10,
+    color: 'white',
+    padding: 10,
+
   },
   khungTextInput: {
     flexDirection: 'row',
@@ -115,7 +135,9 @@ const styles = StyleSheet.create({
     paddingRight: 5
   },
   textInputPass: {
-    flex: 1
+    flex: 1,
+    padding: 10,
+    color: 'white'
   },
   botton: {
     width: 350,
